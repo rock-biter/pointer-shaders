@@ -78,8 +78,8 @@ vec3 curlNoise( vec3 p ){
 void main() {
   vec2 uv = gl_FragCoord.xy / uResolution;
 
-  vec2 uv2 = uv + curlNoise(vec3(uv * 4. + uTime * 0.1, uTime * 0.1)).xy * uDt * 0.3;
-  uv += curlNoise(vec3(uv * 2. + uTime * 0.1, uTime * 0.1)).xy * uDt * 0.15;
+  vec2 uv2 = uv + curlNoise(vec3(uv * 4. + uTime * 0.1, uTime * 0.1)).xy * uDt * 0.2;
+  uv += curlNoise(vec3(uv * 2. + uTime * 0.1, uTime * 0.1)).xy * uDt * 0.1;
 
   vec3 mapColor = texture(uMap, uv).rgb;
   vec3 mapColor2 = texture(uMap, uv2).rgb;
@@ -93,21 +93,22 @@ void main() {
   float d = distance(uv, pointer);
 
   vec3 color = mix(mapColor, mapColor2, 0.5);
-  color *= 1. - uDt * 2.;
-  float speed = clamp(uSpeed * 2.,0.075,0.25);
+  color *= 1. - uDt * 0.5;
+  float speed = clamp(uSpeed * 2.,0.0,0.5);
   float t = smoothstep(speed, 0., d);
   float t2 = smoothstep(speed, 0., d);
   float t3 = smoothstep(speed, 0., d);
-  t2 = pow(t2,10.);
-  t3 = pow(t3,4.);
+  // t2 = pow(t2,10.);
+  // t3 = pow(t3,4.);
   float scale = speed * 5.;
+  t *= t;
   t *= scale;
-  t2 *= scale;
-  t3 *= scale;
+  // t2 *= scale;
+  // t3 *= scale;
 
-  color = mix(color, vec3(0.25,0.1,0.9),t);
-  color = mix(color, vec3(0.1,0.9,0.8),t3);
-  color = mix(color, vec3(1.0), t2);
+  color = mix(color, vec3(0.5),t);
+  // color = mix(color, vec3(0.1,0.9,0.8),t3);
+  // color = mix(color, vec3(1.0), t2);
 
   color = clamp(color, 0.0, 1.0);
 
