@@ -101,7 +101,7 @@ void main() {
   float t3 = smoothstep(speed, 0., d);
   // t2 = pow(t2,10.);
   // t3 = pow(t3,4.);
-  float scale = speed * 5.;
+  float scale = speed * 3.;
   t *= t;
   t *= scale;
   // t2 *= scale;

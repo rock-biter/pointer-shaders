@@ -107,7 +107,7 @@ const scene = new THREE.Scene()
  * BOX
  */
 // const material = new THREE.MeshNormalMaterial()
-const material = new THREE.MeshStandardMaterial({ color: 'coral' })
+const material = new THREE.MeshStandardMaterial({ color: 'white' })
 const geometry = new THREE.TorusKnotGeometry(1.5, 0.6, 128, 32)
 const mesh = new THREE.Mesh(geometry, material)
 // mesh.position.y += 0.5
@@ -261,7 +261,7 @@ if (isMobile) {
  * Lights
  */
 const ambientLight = new THREE.AmbientLight(0xffffff, 1.5)
-const directionalLight = new THREE.DirectionalLight(0xffffff, 4.5)
+const directionalLight = new THREE.DirectionalLight(0xffffff, 3.5)
 directionalLight.position.set(3, 10, 7)
 scene.add(directionalLight)
 

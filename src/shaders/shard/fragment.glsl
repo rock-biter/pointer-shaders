@@ -25,18 +25,20 @@ void main() {
   vec2 sUv = fract(vUv * size);
 
   vec4 diffuse = texture(tDiffuse, uv);
+  diffuse.rgb = min(diffuse.rgb, vec3(1.0));
   vec4 trail = texture(tTrail, uv);
-  diffuse.rgb = max(diffuse.rgb, trail.rgb);
+  diffuse.rgb = max(diffuse.rgb, trail.rgb * 1.5);
   diffuse.rgb = min(diffuse.rgb, vec3(1. - 1. / uShardStep));
   float l = diffuse.r * 0.2125 + diffuse.g * 0.7154 + diffuse.b * 0.0721;
+  // l *= 1. - 1. / uShardStep;
   float lEdge = floor(l * uShardStep) / uShardStep;
-  lEdge -= 1. / uShardStep;
+  lEdge -= 2. / uShardStep;
 
-  float dotShape = step(lEdge,distance(vec2(0.5,0.5), sUv) * 1.5);
-  float squareShape = step(lEdge,max(abs(sUv.x - 0.5), abs(sUv.y - 0.5)) * 1.5);
+  float dotShape = step(lEdge,distance(vec2(0.5,0.5), sUv) * 3.);
+  float squareShape = step(lEdge,max(abs(sUv.x - 0.5), abs(sUv.y - 0.5)) * 3.);
   float lineShape = step(0.1,abs(sUv.y - 0.5));
 
-  float uvX = abs(sUv.x - 0.5);
+  float uvX = abs(sUv.x - 0.5) * 2.;
   float shard = step(lEdge,uvX);
 
   float perlin = cnoise(vec3(uv * uNoiseScale,uTime * 0.5)) * 0.5 + 0.5;
