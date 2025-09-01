@@ -79,6 +79,7 @@ vec3 curlNoise( vec3 p ){
 
 void main() {
   vec2 uv = gl_FragCoord.xy / uResolution;
+  vec2 vUv = uv;
 
   vec2 uv2 = uv + curlNoise(vec3(uv * 4. + uTime * 0.1, uTime * 0.1)).xy * uDt * 0.2 * uDispersion;
   uv += curlNoise(vec3(uv * 2. + uTime * 0.1, uTime * 0.1)).xy * uDt * 0.1 * uDispersion;
@@ -92,11 +93,12 @@ void main() {
   vec2 pointer = uPointer;
   pointer.x *= uResolution.x / uResolution.y;
 
-  float d = distance(uv, pointer);
+  float offest = snoise(vec3(vUv * 5.,uTime)) * 0.2;
+  float d = distance(uv, pointer) - offest;
 
   vec3 color = mix(mapColor, mapColor2, 0.5);
   color *= 1. - uDt * 0.5;
-  float speed = clamp(uSpeed * 2.,0.0,uSize);
+  float speed = clamp(uSpeed * 2.,0.0,uSize + snoise(vec3(vUv,uTime)) * 0.5);
   float t = smoothstep(speed, 0., d);
   float t2 = smoothstep(speed, 0., d);
   float t3 = smoothstep(speed, 0., d);
