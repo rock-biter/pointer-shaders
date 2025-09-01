@@ -12,11 +12,13 @@ uniform float uNoiseScale;
 uniform float uEdge1;
 uniform float uEdge2;
 uniform float uTime;
+uniform bool uInvert;
 
 varying vec2 vUv;
 
 void main() {
 
+  vec3 bg = uInvert ? vec3(0.04) : vec3(0.96);
   vec2 aspect = uResolution / uResolution.xx;
   vec2 size = vec2(uResolution.x / uSize) * aspect;
   vec2 uv = floor(vUv * size) / size;
@@ -35,7 +37,7 @@ void main() {
   float lineShape = step(0.1,abs(sUv.y - 0.5));
 
   float uvX = abs(sUv.x - 0.5);
-  float t = step(lEdge,uvX);
+  float shard = step(lEdge,uvX);
 
   float perlin = cnoise(vec3(uv * uNoiseScale,uTime * 0.5)) * 0.5 + 0.5;
 
@@ -43,22 +45,29 @@ void main() {
   shape = mix(shape, squareShape, step(uEdge2,perlin));
 
   float trailMix = smoothstep(0.2,0.25,trail.r);
-  t = mix(t, shape, trailMix);
+  float t = mix(shard, shape, trailMix);
   // t = dotShape;
   // color.rgb = vec3(lEdge);
   // color.rgb = vec3(uvX);
 
   vec3 c = mix(vec3(0.2), uColor2, step(uEdge1,perlin));
   c = mix(c, uColor3, step(uEdge2,perlin));
-  c = mix(uColor, c, trailMix);
+  c = mix(uInvert ? uColor * 0.25 : uColor, c, trailMix);
 
-  vec3 color = mix(c,vec3(1), t * 2.);
+  c = mix(bg, c, 1. - t);
 
+  
+
+  vec3 color = bg * (1. - l);
+  color += mix(c,bg, t * 2.) * l;
+
+  color = c;
+  
 
   // color.rgb = trail.rgb;
   // l = 1.0;
 
-  gl_FragColor = vec4(color,l);
+  gl_FragColor = vec4(color,1.);
 
   #include <tonemapping_fragment>
 	#include <colorspace_fragment>

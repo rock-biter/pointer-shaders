@@ -26,6 +26,7 @@ const config = {
 	noiseScale: 30,
 	edge1: 0.33,
 	edge2: 0.66,
+	invert: false,
 }
 const pane = new Pane()
 
@@ -90,6 +91,10 @@ pane
 	.on('change', (ev) => {
 		shardMaterial.uniforms.uEdge2.value = ev.value
 	})
+
+pane.addBinding(config, 'invert').on('change', (ev) => {
+	shardMaterial.uniforms.uInvert.value = ev.value
+})
 
 /**
  * Scene
@@ -165,9 +170,12 @@ const shardMaterial = new THREE.ShaderMaterial({
 		uEdge1: new THREE.Uniform(config.edge1),
 		uEdge2: new THREE.Uniform(config.edge2),
 		uTime: new THREE.Uniform(0),
+		uInvert: new THREE.Uniform(config.invert),
 	},
 	transparent: true,
 })
+
+scene.background = new THREE.Color(0)
 
 const shardPass = new ShaderPass(shardMaterial, 'tDiffuse')
 composer.addPass(shardPass)
