@@ -5,6 +5,7 @@ uniform float uDt;
 uniform float uSpeed;
 uniform float uTime;
 uniform float uSize;
+uniform float uDispersion;
 
 vec4 permute(vec4 x){return mod(x*x*34.+x,289.);}
 float snoise(vec3 v){
@@ -79,8 +80,8 @@ vec3 curlNoise( vec3 p ){
 void main() {
   vec2 uv = gl_FragCoord.xy / uResolution;
 
-  vec2 uv2 = uv + curlNoise(vec3(uv * 4. + uTime * 0.1, uTime * 0.1)).xy * uDt * 0.2;
-  uv += curlNoise(vec3(uv * 2. + uTime * 0.1, uTime * 0.1)).xy * uDt * 0.1;
+  vec2 uv2 = uv + curlNoise(vec3(uv * 4. + uTime * 0.1, uTime * 0.1)).xy * uDt * 0.2 * uDispersion;
+  uv += curlNoise(vec3(uv * 2. + uTime * 0.1, uTime * 0.1)).xy * uDt * 0.1 * uDispersion;
 
   vec3 mapColor = texture(uMap, uv).rgb;
   vec3 mapColor2 = texture(uMap, uv2).rgb;

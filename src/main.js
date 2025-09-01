@@ -27,6 +27,7 @@ const config = {
 	edge1: 0.33,
 	edge2: 0.66,
 	invert: false,
+	dispersion: 1,
 }
 const pane = new Pane()
 
@@ -95,6 +96,16 @@ pane
 pane.addBinding(config, 'invert').on('change', (ev) => {
 	shardMaterial.uniforms.uInvert.value = ev.value
 })
+
+pane
+	.addBinding(config, 'dispersion', {
+		min: 0,
+		max: 1,
+		step: 0.01,
+	})
+	.on('change', (ev) => {
+		trailMaterial.uniforms.uDispersion.value = ev.value
+	})
 
 /**
  * Scene
@@ -212,6 +223,7 @@ const trailMaterial = new THREE.ShaderMaterial({
 		uSpeed: new THREE.Uniform(0),
 		uTime: new THREE.Uniform(0),
 		uSize: new THREE.Uniform(isMobile ? 0.3 : 0.5),
+		uDispersion: new THREE.Uniform(config.dispersion),
 	},
 })
 const trailMesh = new THREE.Mesh(triangleGeometry, trailMaterial)
@@ -231,8 +243,8 @@ function createRenderTarget() {
 		sizes.height * trailScaleRes,
 		{
 			type: THREE.HalfFloatType,
-			minFilter: THREE.LinearFilter,
-			magFilter: THREE.LinearFilter,
+			minFilter: THREE.NearestFilter,
+			magFilter: THREE.NearestFilter,
 			depthBuffer: false,
 		}
 	)
