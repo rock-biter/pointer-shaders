@@ -25,9 +25,9 @@ const config = {
 	color3: new THREE.Color(0x7e8bff),
 	noiseScale: 30,
 	edge1: 0.33,
-	edge2: 0.66,
+	edge2: 0.57,
 	invert: false,
-	dispersion: 1,
+	dispersion: 0.37,
 }
 const pane = new Pane()
 
