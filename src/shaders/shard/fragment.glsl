@@ -46,13 +46,13 @@ void main() {
   float shape = mix(lineShape, dotShape, step(uEdge1,perlin));
   shape = mix(shape, squareShape, step(uEdge2,perlin));
 
-  float trailMix = smoothstep(0.2,0.25,trail.r);
+  float trailMix = smoothstep(0.20,0.25,trail.r);
   float t = mix(shard, shape, trailMix);
   // t = dotShape;
   // color.rgb = vec3(lEdge);
   // color.rgb = vec3(uvX);
 
-  vec3 c = mix(vec3(0.2), uColor2, step(uEdge1,perlin));
+  vec3 c = mix(vec3(uInvert ? 0.15 : 0.5), uColor2, step(uEdge1,perlin));
   c = mix(c, uColor3, step(uEdge2,perlin));
   c = mix(uInvert ? uColor * 0.2 : uColor, c, trailMix);
   // c *= l;

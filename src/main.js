@@ -20,7 +20,7 @@ const isMobile = innerWidth < 800
 const config = {
 	size: isMobile ? 14 : 12,
 	shardStep: isMobile ? 14 : 12,
-	color: new THREE.Color(0.45, 0.45, 0.45),
+	color: new THREE.Color(0.7, 0.7, 0.7),
 	color2: new THREE.Color(0xff5307),
 	color3: new THREE.Color(0x7e8bff),
 	noiseScale: 30,
