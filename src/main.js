@@ -11,13 +11,15 @@ import shardFragment from './shaders/shard/fragment.glsl'
 import trailVertex from './shaders/trail/vertex.glsl'
 import trailFragment from './shaders/trail/fragment.glsl'
 
+const isMobile = innerWidth < 800
+
 /**
  * Debug
  */
 // __gui__
 const config = {
-	size: 12,
-	shardStep: 12,
+	size: isMobile ? 14 : 12,
+	shardStep: isMobile ? 14 : 12,
 	color: new THREE.Color(0.45, 0.45, 0.45),
 	color2: new THREE.Color(0xff5307),
 	color3: new THREE.Color(0x7e8bff),
@@ -119,7 +121,7 @@ const sizes = {
  */
 const fov = 60
 const camera = new THREE.PerspectiveCamera(fov, sizes.width / sizes.height, 0.1)
-camera.position.set(0, 0, 6)
+camera.position.set(0, 0, isMobile ? 8 : 6)
 camera.lookAt(new THREE.Vector3(0, 2.5, 0))
 
 /**
@@ -201,6 +203,7 @@ const trailMaterial = new THREE.ShaderMaterial({
 		uDt: new THREE.Uniform(0.0),
 		uSpeed: new THREE.Uniform(0),
 		uTime: new THREE.Uniform(0),
+		uSize: new THREE.Uniform(isMobile ? 0.3 : 0.5),
 	},
 })
 const trailMesh = new THREE.Mesh(triangleGeometry, trailMaterial)
@@ -241,6 +244,10 @@ handleResize()
 // __controls__
 const controls = new OrbitControls(camera, renderer.domElement)
 controls.enableDamping = true
+
+if (isMobile) {
+	controls.enableRotate = false
+}
 
 /**
  * Lights
@@ -327,7 +334,8 @@ function handleResize() {
 
 	const res = new THREE.Vector2()
 	renderer.getDrawingBufferSize(res)
-	composer.setSize(res.x, res.y)
+	// composer.setSize(res.x, res.y)
+
 	shardMaterial.uniforms.uResolution.value = res
 	trailMaterial.uniforms.uResolution.value.set(
 		res.x * trailScaleRes,

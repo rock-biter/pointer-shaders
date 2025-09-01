@@ -4,6 +4,7 @@ uniform vec2 uPointer;
 uniform float uDt;
 uniform float uSpeed;
 uniform float uTime;
+uniform float uSize;
 
 vec4 permute(vec4 x){return mod(x*x*34.+x,289.);}
 float snoise(vec3 v){
@@ -94,7 +95,7 @@ void main() {
 
   vec3 color = mix(mapColor, mapColor2, 0.5);
   color *= 1. - uDt * 0.5;
-  float speed = clamp(uSpeed * 2.,0.0,0.5);
+  float speed = clamp(uSpeed * 2.,0.0,uSize);
   float t = smoothstep(speed, 0., d);
   float t2 = smoothstep(speed, 0., d);
   float t3 = smoothstep(speed, 0., d);
