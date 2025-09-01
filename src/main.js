@@ -162,6 +162,7 @@ const shardMaterial = new THREE.ShaderMaterial({
 		uNoiseScale: new THREE.Uniform(config.noiseScale),
 		uEdge1: new THREE.Uniform(config.edge1),
 		uEdge2: new THREE.Uniform(config.edge2),
+		uTime: new THREE.Uniform(0),
 	},
 	transparent: true,
 })
@@ -273,6 +274,7 @@ function tic() {
 	// __controls_update__
 	controls.update(dt)
 
+	shardMaterial.uniforms.uTime.value = time
 	trailMaterial.uniforms.uTime.value = time
 	const prevPointer = trailMaterial.uniforms.uPointer.value
 

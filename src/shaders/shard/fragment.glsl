@@ -11,6 +11,7 @@ uniform vec3 uColor3;
 uniform float uNoiseScale;
 uniform float uEdge1;
 uniform float uEdge2;
+uniform float uTime;
 
 varying vec2 vUv;
 
@@ -36,7 +37,7 @@ void main() {
   float uvX = abs(sUv.x - 0.5);
   float t = step(lEdge,uvX);
 
-  float perlin = cnoise(vec3(uv * uNoiseScale,1.0)) * 0.5 + 0.5;
+  float perlin = cnoise(vec3(uv * uNoiseScale,uTime * 0.5)) * 0.5 + 0.5;
 
   float shape = mix(lineShape, dotShape, step(uEdge1,perlin));
   shape = mix(shape, squareShape, step(uEdge2,perlin));
