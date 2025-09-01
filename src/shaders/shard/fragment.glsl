@@ -46,7 +46,7 @@ void main() {
   float shape = mix(lineShape, dotShape, step(uEdge1,perlin));
   shape = mix(shape, squareShape, step(uEdge2,perlin));
 
-  float trailMix = smoothstep(0.20,0.25,trail.r);
+  float trailMix = smoothstep(0.10,0.15,trail.r);
   float t = mix(shard, shape, trailMix);
   // t = dotShape;
   // color.rgb = vec3(lEdge);
