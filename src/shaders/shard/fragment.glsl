@@ -18,7 +18,7 @@ varying vec2 vUv;
 
 void main() {
 
-  vec3 bg = uInvert ? vec3(0.04) : vec3(0.96);
+  vec3 bg = uInvert ? vec3(0.03) : vec3(0.96);
   vec2 aspect = uResolution / uResolution.xx;
   vec2 size = vec2(uResolution.x / uSize) * aspect;
   vec2 uv = floor(vUv * size) / size;
@@ -52,8 +52,10 @@ void main() {
 
   vec3 c = mix(vec3(0.2), uColor2, step(uEdge1,perlin));
   c = mix(c, uColor3, step(uEdge2,perlin));
-  c = mix(uInvert ? uColor * 0.25 : uColor, c, trailMix);
+  c = mix(uInvert ? uColor * 0.2 : uColor, c, trailMix);
+  // c *= l;
 
+  c = mix(bg, c, l);
   c = mix(bg, c, 1. - t);
 
   
