@@ -16,6 +16,8 @@ uniform float uEdge2;
 uniform float uTime;
 uniform bool uInvert;
 uniform bool uImage;
+uniform float uContrast;
+uniform float uBrightness;
 
 varying vec2 vUv;
 
@@ -29,6 +31,9 @@ void main() {
 
   vec4 diffuse = uImage ? texture(uTexture, uv) : texture(tDiffuse, uv);
   diffuse.rgb = min(diffuse.rgb, vec3(1.0));
+
+  diffuse.rgb = (diffuse.rgb - 0.5) * uContrast + 0.5 + uBrightness;
+
   vec4 trail = texture(tTrail, uv);
   diffuse.rgb = max(diffuse.rgb, trail.rgb * 1.5);
   diffuse.rgb = min(diffuse.rgb, vec3(1. - 1. / uShardStep));
@@ -44,7 +49,7 @@ void main() {
   float squareShape = step(lEdge,max(abs(sUv.x - 0.5), abs(sUv.y - 0.5)) * 3.);
   float lineShape = step(0.1,abs(sUv.y - 0.5));
 
-  float offsetPerlin = cnoise(vec3(uv * 5. + vec2(0.,uTime * 0.25),uTime * 0.3)) * 0.5 + 0.3;
+  float offsetPerlin = cnoise(vec3(uv * 5. + vec2(0.,uTime * 0.25),uTime * 0.3)) * 0.5 + 0.2;
 
   // float uvX = abs(fract(sUv.x + offsetPerlin * xOffset) - 0.5 ) * 2.;
   float uvX = sUv.x + offsetPerlin * xOffset;

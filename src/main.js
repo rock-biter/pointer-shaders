@@ -50,6 +50,8 @@ const config = {
 	invert: true,
 	dispersion: 0.37,
 	texture: 'none',
+	contrast: 1.0,
+	brightness: 0.0,
 }
 const pane = new Pane()
 
@@ -151,6 +153,26 @@ Promise.all(textureLoadPromises).then(() => {
 			shardMaterial.uniforms.uTexture.value = textures[ev.value]
 			shardMaterial.uniforms.uImage.value = true
 		})
+
+	pane
+		.addBinding(config, 'contrast', {
+			min: 0.0,
+			max: 3.0,
+			step: 0.01,
+		})
+		.on('change', (ev) => {
+			shardMaterial.uniforms.uContrast.value = ev.value
+		})
+
+	pane
+		.addBinding(config, 'brightness', {
+			min: -1.0,
+			max: 1.0,
+			step: 0.01,
+		})
+		.on('change', (ev) => {
+			shardMaterial.uniforms.uBrightness.value = ev.value
+		})
 })
 
 /**
@@ -230,6 +252,8 @@ const shardMaterial = new THREE.ShaderMaterial({
 		uInvert: new THREE.Uniform(config.invert),
 		uTexture: new THREE.Uniform(),
 		uImage: new THREE.Uniform(false),
+		uContrast: new THREE.Uniform(config.contrast),
+		uBrightness: new THREE.Uniform(config.brightness),
 	},
 	transparent: true,
 })
