@@ -44,14 +44,14 @@ const config = {
 	color: new THREE.Color(0.65, 0.65, 0.65),
 	color2: new THREE.Color(0xff5307),
 	color3: new THREE.Color(0x7e8bff),
-	noiseScale: 30,
-	edge1: 0.33,
-	edge2: 0.57,
+	noiseScale: 55,
+	edge1: 0.66,
+	edge2: 0.77,
 	invert: true,
-	dispersion: 0.37,
+	dispersion: 0.15,
 	texture: 'hand',
-	contrast: 1.0,
-	brightness: 0.0,
+	contrast: 2.2,
+	brightness: 0.35,
 }
 const pane = new Pane()
 
