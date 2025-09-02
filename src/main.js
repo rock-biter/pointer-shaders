@@ -1,6 +1,7 @@
 import { EffectComposer, RenderPass, ShaderPass } from 'postprocessing'
 import './style.css'
 import * as THREE from 'three'
+import { TextureLoader } from 'three'
 // __controls_import__
 // __gui_import__
 
@@ -13,21 +14,42 @@ import trailFragment from './shaders/trail/fragment.glsl'
 
 const isMobile = innerWidth < 800
 
+const textureLoader = new TextureLoader()
+const texturePaths = [
+	{ name: 'sand', path: '/images/sand.png' },
+	{ name: 'hand', path: '/images/hand.png' },
+	{ name: 'lock', path: '/images/lock.png' },
+	{ name: 'horizontal', path: '/images/horizontal.png' },
+	{ name: 'prisms', path: '/images/prisms.png' },
+	{ name: 'keyboard', path: '/images/keyboard.png' },
+]
+
+const textures = {}
+const textureLoadPromises = texturePaths.map(({ name, path }) => {
+	return new Promise((resolve) => {
+		textureLoader.load(path, (texture) => {
+			textures[name] = texture
+			resolve()
+		})
+	})
+})
+
 /**
  * Debug
  */
 // __gui__
 const config = {
-	size: isMobile ? 14 : 12,
-	shardStep: isMobile ? 14 : 12,
-	color: new THREE.Color(0.7, 0.7, 0.7),
+	size: isMobile ? 16 : 14,
+	shardStep: isMobile ? 36 : 36,
+	color: new THREE.Color(0.65, 0.65, 0.65),
 	color2: new THREE.Color(0xff5307),
 	color3: new THREE.Color(0x7e8bff),
 	noiseScale: 30,
 	edge1: 0.33,
 	edge2: 0.57,
-	invert: false,
+	invert: true,
 	dispersion: 0.37,
+	texture: 'none',
 }
 const pane = new Pane()
 
@@ -107,6 +129,30 @@ pane
 		trailMaterial.uniforms.uDispersion.value = ev.value
 	})
 
+// Aggiungi dopo la creazione del pane
+Promise.all(textureLoadPromises).then(() => {
+	// Aggiungi il controllo della texture a tweakpane
+	pane
+		.addBinding(config, 'texture', {
+			options: texturePaths.reduce(
+				(acc, t) => {
+					acc[t.name] = t.name
+					return acc
+				},
+				{ none: 'none' }
+			),
+		})
+		.on('change', (ev) => {
+			if (ev.value === 'none') {
+				shardMaterial.uniforms.uImage.value = false
+				return
+			}
+
+			shardMaterial.uniforms.uTexture.value = textures[ev.value]
+			shardMaterial.uniforms.uImage.value = true
+		})
+})
+
 /**
  * Scene
  */
@@ -182,6 +228,8 @@ const shardMaterial = new THREE.ShaderMaterial({
 		uEdge2: new THREE.Uniform(config.edge2),
 		uTime: new THREE.Uniform(0),
 		uInvert: new THREE.Uniform(config.invert),
+		uTexture: new THREE.Uniform(),
+		uImage: new THREE.Uniform(false),
 	},
 	transparent: true,
 })
@@ -235,7 +283,7 @@ window.addEventListener('pointermove', (ev) => {
 	pointer.y = -(ev.clientY / sizes.height) * 2 + 1
 })
 
-let trailScaleRes = 0.25
+let trailScaleRes = 0.5
 
 function createRenderTarget() {
 	return new THREE.WebGLRenderTarget(
