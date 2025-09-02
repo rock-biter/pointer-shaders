@@ -49,7 +49,7 @@ const config = {
 	edge2: 0.57,
 	invert: true,
 	dispersion: 0.37,
-	texture: 'none',
+	texture: 'hand',
 	contrast: 1.0,
 	brightness: 0.0,
 }

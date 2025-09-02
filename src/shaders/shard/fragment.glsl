@@ -29,7 +29,12 @@ void main() {
   vec2 uv = floor(vUv * size) / size;
   vec2 sUv = fract(vUv * size);
 
-  vec4 diffuse = uImage ? texture(uTexture, uv) : texture(tDiffuse, uv);
+  ivec2 tSize = textureSize(uTexture,0);
+  vec2 tScale = vec2(1.);
+  tScale.y *= float(tSize.x) / float(tSize.y);
+  tScale.y *= aspect.y;
+  
+  vec4 diffuse = uImage ? texture(uTexture, (uv - 0.5) * tScale + 0.5) : texture(tDiffuse, uv);
   diffuse.rgb = min(diffuse.rgb, vec3(1.0));
 
   diffuse.rgb = (diffuse.rgb - 0.5) * uContrast + 0.5 + uBrightness;
