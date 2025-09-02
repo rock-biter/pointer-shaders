@@ -17,11 +17,17 @@ const isMobile = innerWidth < 800
 const textureLoader = new TextureLoader()
 const texturePaths = [
 	{ name: 'hand', path: '/images/hand.png' },
+	{ name: 'keyboard', path: '/images/keyboard.png' },
 	{ name: 'sand', path: '/images/sand.png' },
-	{ name: 'lock', path: '/images/lock.png' },
 	{ name: 'horizontal', path: '/images/horizontal.png' },
 	{ name: 'prisms', path: '/images/prisms.png' },
-	{ name: 'keyboard', path: '/images/keyboard.png' },
+	{ name: 'lock', path: '/images/lock.png' },
+	{ name: 'location', path: '/images/location.png' },
+	{ name: 'medal', path: '/images/medal.png' },
+	{ name: 'woman', path: '/images/woman.png' },
+	{ name: 'mountain', path: '/images/mountain.png' },
+	{ name: 'butterfly', path: '/images/butterfly.png' },
+	{ name: 'flower', path: '/images/flower.png' },
 ]
 
 const textures = {}
