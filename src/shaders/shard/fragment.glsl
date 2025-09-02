@@ -15,6 +15,7 @@ uniform float uEdge1;
 uniform float uEdge2;
 uniform float uTime;
 uniform bool uInvert;
+uniform bool uInvertColor;
 uniform bool uImage;
 uniform float uContrast;
 uniform float uBrightness;
@@ -36,29 +37,37 @@ void main() {
   vec2 uvImage = (uv - 0.5) * tScale + 0.5;
   vec4 image = texture(uTexture, uvImage);
 
+  image.rgb = (image.rgb - 0.5) * uContrast + 0.5 + uBrightness;
+
+  if(uInvertColor) {
+    image.rgb = vec3(1.0) - image.rgb;
+  }
+
   if(uvImage.x > 1. || uvImage.x < 0. || uvImage.y > 1.0 || uvImage.y < 0.) {
     if(uInvert) {
       image.rgb = bg;
+    } else {
+      image.rgb = vec3(0);
     }
   }
   
   vec4 diffuse = uImage ? image : texture(tDiffuse, uv);
   diffuse.rgb = min(diffuse.rgb, vec3(1.0));
   
-  diffuse.rgb = (diffuse.rgb - 0.5) * uContrast + 0.5 + uBrightness;
-
+  
   vec4 trail = texture(tTrail, uv);
   // diffuse.rgb = max(diffuse.rgb, trail.rgb * 1.5);
   float gap = 10. / uShardStep;
   diffuse.rgb = min(diffuse.rgb, vec3(1. - gap));
   float l = diffuse.r * 0.2125 + diffuse.g * 0.7154 + diffuse.b * 0.0721;
+  
   // l *= 1. - gap;
   float xOffset = (l - 1.) * 1.;
   // l *= 1. - 1. / uShardStep;
   float lEdge = floor(l * uShardStep) / uShardStep;
   lEdge -= gap;
 
-  float shapeEdge = uInvert ? 0.3 : 0.5;
+  float shapeEdge = uInvert ? 0.3 : 0.4;
   float dotShape = step(max(shapeEdge,lEdge),distance(vec2(0.5,0.5), sUv) * 2.5);
   float squareShape = step(max(shapeEdge * 1.5,lEdge),max(abs(sUv.x - 0.5), abs(sUv.y - 0.5)) * 2.5);
   float lineShape = step(lEdge,abs(sUv.y - 0.5) * 2.);

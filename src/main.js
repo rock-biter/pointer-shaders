@@ -54,6 +54,7 @@ const config = {
 	edge1: 0.66,
 	edge2: 0.77,
 	invert: true,
+	invertColor: false,
 	dispersion: 0.15,
 	texture: 'hand',
 	contrast: 2.2,
@@ -125,6 +126,10 @@ pane
 
 pane.addBinding(config, 'invert').on('change', (ev) => {
 	shardMaterial.uniforms.uInvert.value = ev.value
+})
+
+pane.addBinding(config, 'invertColor').on('change', (ev) => {
+	shardMaterial.uniforms.uInvertColor.value = ev.value
 })
 
 pane
@@ -259,6 +264,7 @@ const shardMaterial = new THREE.ShaderMaterial({
 		uEdge2: new THREE.Uniform(config.edge2),
 		uTime: new THREE.Uniform(0),
 		uInvert: new THREE.Uniform(config.invert),
+		uInvertColor: new THREE.Uniform(config.uInvertColor),
 		uTexture: new THREE.Uniform(),
 		uImage: new THREE.Uniform(false),
 		uContrast: new THREE.Uniform(config.contrast),
