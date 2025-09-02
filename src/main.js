@@ -16,8 +16,8 @@ const isMobile = innerWidth < 800
 
 const textureLoader = new TextureLoader()
 const texturePaths = [
-	{ name: 'sand', path: '/images/sand.png' },
 	{ name: 'hand', path: '/images/hand.png' },
+	{ name: 'sand', path: '/images/sand.png' },
 	{ name: 'lock', path: '/images/lock.png' },
 	{ name: 'horizontal', path: '/images/horizontal.png' },
 	{ name: 'prisms', path: '/images/prisms.png' },
@@ -133,6 +133,9 @@ pane
 
 // Aggiungi dopo la creazione del pane
 Promise.all(textureLoadPromises).then(() => {
+	shardMaterial.uniforms.uTexture.value = textures[texturePaths[0].name]
+	shardMaterial.uniforms.uImage.value = true
+
 	// Aggiungi il controllo della texture a tweakpane
 	pane
 		.addBinding(config, 'texture', {
