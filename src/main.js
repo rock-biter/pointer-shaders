@@ -62,7 +62,21 @@ const config = {
 }
 const pane = new Pane()
 
-pane
+const settingsFolder = pane.addFolder({
+	title: 'Settings',
+})
+
+const utilsFolder = pane.addFolder({
+	title: 'Utils',
+})
+
+utilsFolder
+	.addButton({
+		title: 'Export Config',
+	})
+	.on('click', onExport)
+
+settingsFolder
 	.addBinding(config, 'size', {
 		min: 1,
 		max: 50,
@@ -72,7 +86,7 @@ pane
 		shardMaterial.uniforms.uSize.value = ev.value
 	})
 
-pane
+settingsFolder
 	.addBinding(config, 'shardStep', {
 		min: 4,
 		max: 36,
@@ -82,19 +96,19 @@ pane
 		shardMaterial.uniforms.uShardStep.value = ev.value
 	})
 
-pane.addBinding(config, 'color', {
+settingsFolder.addBinding(config, 'color', {
 	color: { type: 'float' },
 })
 
-pane.addBinding(config, 'color2', {
+settingsFolder.addBinding(config, 'color2', {
 	color: { type: 'float' },
 })
 
-pane.addBinding(config, 'color3', {
+settingsFolder.addBinding(config, 'color3', {
 	color: { type: 'float' },
 })
 
-pane
+settingsFolder
 	.addBinding(config, 'noiseScale', {
 		min: 1,
 		max: 100,
@@ -104,7 +118,7 @@ pane
 		shardMaterial.uniforms.uNoiseScale.value = ev.value
 	})
 
-pane
+settingsFolder
 	.addBinding(config, 'edge1', {
 		min: 0,
 		max: 1,
@@ -114,7 +128,7 @@ pane
 		shardMaterial.uniforms.uEdge1.value = ev.value
 	})
 
-pane
+settingsFolder
 	.addBinding(config, 'edge2', {
 		min: 0,
 		max: 1,
@@ -124,15 +138,15 @@ pane
 		shardMaterial.uniforms.uEdge2.value = ev.value
 	})
 
-pane.addBinding(config, 'invert').on('change', (ev) => {
+settingsFolder.addBinding(config, 'invert').on('change', (ev) => {
 	shardMaterial.uniforms.uInvert.value = ev.value
 })
 
-pane.addBinding(config, 'invertColor').on('change', (ev) => {
+settingsFolder.addBinding(config, 'invertColor').on('change', (ev) => {
 	shardMaterial.uniforms.uInvertColor.value = ev.value
 })
 
-pane
+settingsFolder
 	.addBinding(config, 'dispersion', {
 		min: 0,
 		max: 1,
@@ -147,8 +161,8 @@ Promise.all(textureLoadPromises).then(() => {
 	shardMaterial.uniforms.uTexture.value = textures[texturePaths[0].name]
 	shardMaterial.uniforms.uImage.value = true
 
-	// Aggiungi il controllo della texture a tweakpane
-	pane
+	// Aggiungi il controllo della texture a pane
+	settingsFolder
 		.addBinding(config, 'texture', {
 			options: texturePaths.reduce(
 				(acc, t) => {
@@ -168,7 +182,7 @@ Promise.all(textureLoadPromises).then(() => {
 			shardMaterial.uniforms.uImage.value = true
 		})
 
-	pane
+	settingsFolder
 		.addBinding(config, 'contrast', {
 			min: 0.0,
 			max: 3.0,
@@ -178,7 +192,7 @@ Promise.all(textureLoadPromises).then(() => {
 			shardMaterial.uniforms.uContrast.value = ev.value
 		})
 
-	pane
+	settingsFolder
 		.addBinding(config, 'brightness', {
 			min: -1.0,
 			max: 1.0,
@@ -477,7 +491,9 @@ function handleDrop(event) {
 			textures[name] = texture
 
 			// Aggiorna le opzioni del menu a tendina
-			const textureControl = pane.children.find((c) => c.label === 'texture')
+			const textureControl = settingsFolder.children.find(
+				(c) => c.label === 'texture'
+			)
 			console.log(textureControl)
 			if (textureControl) {
 				const options = [...textureControl.options]
@@ -503,3 +519,43 @@ function handleDrop(event) {
 // Aggiungi dopo la creazione del renderer
 document.body.addEventListener('dragover', handleDragOver)
 document.body.addEventListener('drop', handleDrop)
+
+// export
+function onExport() {
+	const configToExport = {
+		size: config.size,
+		shardStep: config.shardStep,
+		noiseScale: config.noiseScale,
+		edge1: config.edge1,
+		edge2: config.edge2,
+		invert: config.invert,
+		invertColor: config.invertColor,
+		dispersion: config.dispersion,
+		contrast: config.contrast,
+		brightness: config.brightness,
+	}
+
+	// Crea il file JSON
+	const dataStr = JSON.stringify(configToExport, null, 2)
+	const dataUri =
+		'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr)
+
+	// Crea un elemento <a> per il download
+	const textureName = createSlug(config.texture)
+	const exportName = `${textureName}-shader-config.json`
+	const linkElement = document.createElement('a')
+	linkElement.setAttribute('href', dataUri)
+	linkElement.setAttribute('download', exportName)
+
+	// Simula il click per far partire il download
+	linkElement.click()
+}
+
+function createSlug(str) {
+	return str
+		.toLowerCase()
+		.trim()
+		.replace(/[^\w\s-]/g, '') // Remove special characters
+		.replace(/[\s_-]+/g, '-') // Replace spaces and underscores with hyphens
+		.replace(/^-+|-+$/g, '') // Remove leading/trailing hyphens
+}
