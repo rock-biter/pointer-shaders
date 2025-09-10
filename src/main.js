@@ -1,7 +1,7 @@
 import { EffectComposer, RenderPass, ShaderPass } from 'postprocessing'
 import './style.css'
 import * as THREE from 'three'
-import { TextureLoader } from 'three'
+import { TextureLoader, Texture } from 'three'
 // __controls_import__
 // __gui_import__
 
@@ -452,3 +452,54 @@ function handleResize() {
 	rt1.setSize(res.x * trailScaleRes, res.y * trailScaleRes)
 	rt2.setSize(res.x * trailScaleRes, res.y * trailScaleRes)
 }
+
+// Aggiungi dopo la definizione di config
+function handleDragOver(event) {
+	event.preventDefault()
+	event.dataTransfer.dropEffect = 'copy'
+}
+
+function handleDrop(event) {
+	event.preventDefault()
+
+	const file = event.dataTransfer.files[0]
+	if (!file.type.startsWith('image/')) return
+
+	const reader = new FileReader()
+	reader.onload = function (event) {
+		const img = new Image()
+		img.onload = function () {
+			const texture = new Texture(img)
+			texture.needsUpdate = true
+
+			// Aggiungi la texture al dizionario delle texture
+			const name = file.name.split('.')[0]
+			textures[name] = texture
+
+			// Aggiorna le opzioni del menu a tendina
+			const textureControl = pane.children.find((c) => c.label === 'texture')
+			console.log(textureControl)
+			if (textureControl) {
+				const options = [...textureControl.options]
+				options.push({
+					text: name,
+					value: name,
+				})
+				// 	options[name] = name
+				textureControl.options = options
+			}
+
+			// // Imposta la nuova texture come attiva
+			config.texture = name
+			pane.refresh()
+			shardMaterial.uniforms.uTexture.value = texture
+			shardMaterial.uniforms.uImage.value = true
+		}
+		img.src = event.target.result
+	}
+	reader.readAsDataURL(file)
+}
+
+// Aggiungi dopo la creazione del renderer
+document.body.addEventListener('dragover', handleDragOver)
+document.body.addEventListener('drop', handleDrop)
