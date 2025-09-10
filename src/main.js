@@ -477,43 +477,50 @@ function handleDrop(event) {
 	event.preventDefault()
 
 	const file = event.dataTransfer.files[0]
-	if (!file.type.startsWith('image/')) return
 
-	const reader = new FileReader()
-	reader.onload = function (event) {
-		const img = new Image()
-		img.onload = function () {
-			const texture = new Texture(img)
-			texture.needsUpdate = true
-
-			// Aggiungi la texture al dizionario delle texture
-			const name = file.name.split('.')[0]
-			textures[name] = texture
-
-			// Aggiorna le opzioni del menu a tendina
-			const textureControl = settingsFolder.children.find(
-				(c) => c.label === 'texture'
-			)
-			console.log(textureControl)
-			if (textureControl) {
-				const options = [...textureControl.options]
-				options.push({
-					text: name,
-					value: name,
-				})
-				// 	options[name] = name
-				textureControl.options = options
-			}
-
-			// // Imposta la nuova texture come attiva
-			config.texture = name
-			pane.refresh()
-			shardMaterial.uniforms.uTexture.value = texture
-			shardMaterial.uniforms.uImage.value = true
-		}
-		img.src = event.target.result
+	if (file.type.startsWith('image/')) {
+		handleImageDrop(file)
+	} else if (file.type === 'application/json') {
+		handleConfigDrop(file)
 	}
-	reader.readAsDataURL(file)
+
+	// if (!file.type.startsWith('image/')) return
+
+	// const reader = new FileReader()
+	// reader.onload = function (event) {
+	// 	const img = new Image()
+	// 	img.onload = function () {
+	// 		const texture = new Texture(img)
+	// 		texture.needsUpdate = true
+
+	// 		// Aggiungi la texture al dizionario delle texture
+	// 		const name = file.name.split('.')[0]
+	// 		textures[name] = texture
+
+	// 		// Aggiorna le opzioni del menu a tendina
+	// 		const textureControl = settingsFolder.children.find(
+	// 			(c) => c.label === 'texture'
+	// 		)
+	// 		console.log(textureControl)
+	// 		if (textureControl) {
+	// 			const options = [...textureControl.options]
+	// 			options.push({
+	// 				text: name,
+	// 				value: name,
+	// 			})
+	// 			// 	options[name] = name
+	// 			textureControl.options = options
+	// 		}
+
+	// 		// // Imposta la nuova texture come attiva
+	// 		config.texture = name
+	// 		pane.refresh()
+	// 		shardMaterial.uniforms.uTexture.value = texture
+	// 		shardMaterial.uniforms.uImage.value = true
+	// 	}
+	// 	img.src = event.target.result
+	// }
+	// reader.readAsDataURL(file)
 }
 
 // Aggiungi dopo la creazione del renderer
@@ -558,4 +565,95 @@ function createSlug(str) {
 		.replace(/[^\w\s-]/g, '') // Remove special characters
 		.replace(/[\s_-]+/g, '-') // Replace spaces and underscores with hyphens
 		.replace(/^-+|-+$/g, '') // Remove leading/trailing hyphens
+}
+
+function handleConfigDrop(file) {
+	const reader = new FileReader()
+	reader.onload = function (event) {
+		try {
+			const importedConfig = JSON.parse(event.target.result)
+
+			// Applica le configurazioni importate
+			Object.keys(importedConfig).forEach((key) => {
+				if (key in config) {
+					config[key] = importedConfig[key]
+
+					// Aggiorna gli uniform dello shader
+					switch (key) {
+						case 'size':
+							shardMaterial.uniforms.uSize.value = importedConfig[key]
+							break
+						case 'shardStep':
+							shardMaterial.uniforms.uShardStep.value = importedConfig[key]
+							break
+						case 'noiseScale':
+							shardMaterial.uniforms.uNoiseScale.value = importedConfig[key]
+							break
+						case 'edge1':
+							shardMaterial.uniforms.uEdge1.value = importedConfig[key]
+							break
+						case 'edge2':
+							shardMaterial.uniforms.uEdge2.value = importedConfig[key]
+							break
+						case 'invert':
+							shardMaterial.uniforms.uInvert.value = importedConfig[key]
+							break
+						case 'invertColor':
+							shardMaterial.uniforms.uInvertColor.value = importedConfig[key]
+							break
+						case 'dispersion':
+							trailMaterial.uniforms.uDispersion.value = importedConfig[key]
+							break
+						case 'contrast':
+							shardMaterial.uniforms.uContrast.value = importedConfig[key]
+							break
+						case 'brightness':
+							shardMaterial.uniforms.uBrightness.value = importedConfig[key]
+							break
+					}
+				}
+			})
+
+			// Aggiorna l'interfaccia di Tweakpane
+			pane.refresh()
+		} catch (error) {
+			console.error('Error importing config:', error)
+		}
+	}
+
+	reader.readAsText(file)
+}
+
+function handleImageDrop(file) {
+	const reader = new FileReader()
+	reader.onload = function (event) {
+		const img = new Image()
+		img.onload = function () {
+			const texture = new Texture(img)
+			texture.needsUpdate = true
+
+			const name = file.name.split('.')[0]
+			textures[name] = texture
+
+			const textureControl = settingsFolder.children.find(
+				(c) => c.label === 'texture'
+			)
+
+			if (textureControl) {
+				const options = [...textureControl.options]
+				options.push({
+					text: name,
+					value: name,
+				})
+				textureControl.options = options
+			}
+
+			config.texture = name
+			pane.refresh()
+			shardMaterial.uniforms.uTexture.value = texture
+			shardMaterial.uniforms.uImage.value = true
+		}
+		img.src = event.target.result
+	}
+	reader.readAsDataURL(file)
 }
